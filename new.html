@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website with Flipbook and Carousel</title>
+    <style>
+        .rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+    
+        .image {
+            position: absolute;
+            width: 100px; /* Increase the size of the image */
+            height: auto;
+            animation: rainEffect 4s infinite linear;
+        }
+    
+        @keyframes rainEffect {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+    </style>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        /* Navbar */
+        nav {
+            background-color: #333;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav .home-btn {
+            color: white;
+            font-size: 1.2em;
+            text-decoration: none;
+        }
+
+        nav .home-btn:hover {
+            color: #ddd;
+        }
+
+        .carousel-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .carousel {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .carousel video {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+     
+        }
+
+
+        .carousel-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            font-size: 2em;
+            padding: 10px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .prev-button {
+            left: 10px;
+        }
+
+        .next-button {
+            right: 10px;
+        }
+
+        /* #flipbook {
+            width: 90vw; 
+            height: 70vh; 
+            margin: auto;
+            background-color: #181212;
+            border-radius: 10px;
+            border-color: blue;
+            border: blue solid 2px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            z-index: 1; 
+            position: relative;
+            background: url('./12.png') no-repeat center center;
+            background-size: cover; 
+            
+           
+
+        } */
+        #flipbook {
+    width: 90vw; /* Responsive width */
+    height: 70vh; /* Responsive height */
+    margin: auto;
+    background-color: #181212;
+    border-radius: 10px;
+    border-color: blue;
+    border: blue solid 2px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    z-index: 1; /* Ensures flipbook is above the background */
+    position: relative;
+    
+    /* Background image settings */
+    background: url('./12.png') no-repeat center center;
+    background-size: cover; /* Ensure the image covers the entire page */
+    background-position: center center; /* Center the image */
+    background-attachment: fixed; /* Optional: Makes the background fixed during scrolling */
+}
+
+
+        /* Set page background image for each page */
+        .page {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative;
+            background: url('./one.jpg') no-repeat center center;
+            background-size: cover; /* Ensure the image covers the entire page */
+        }
+
+        /* Shadow effect on the front page */
+        .page:first-child {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Adds a shadow on the front page */
+            transform: translateY(5px); /* Adds a slight shadow displacement */
+        }
+
+        /* Cover Page Styles */
+        .cover-page {
+            background-color: #f1f4f1; /* You can change this to any color or image */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            flex-direction: column;
+            color: white;
+            padding: 20px;
+        }
+
+        .cover-page .cover-content h1 {
+            font-size: 3em;
+            font-weight: bold;
+        }
+
+        .cover-page .cover-content p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .profile-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+    background-color: #f4faf6;
+    position: relative;
+    justify-content: flex-start;
+    border-radius: 10px 10px 0 0;
+}
+
+.profile-header .profile-info {
+    display: flex;
+    align-items: center;
+    color: rgb(8, 8, 8); /* Ensure the text is visible on the background */
+}
+
+.profile-header .name {
+    font-size: 1.4em;
+    font-weight: bold;
+    margin-right: 10px; /* Space between name and status */
+}
+
+.profile-header .status {
+    font-size: 0.9em;
+    color: #888;
+    margin-right: 10px; /* Space between status text and the status dot */
+}
+
+.profile-header .status-dot {
+    width: 10px;
+    height: 10px;
+    background-color: #25d366; /* Green dot for online */
+    border-radius: 50%;
+}
+
+
+
+        .message {
+            display: flex;
+            align-items: flex-end;
+            max-width: 70%;
+            margin-bottom: 15px;
+            margin-top: 20px;
+            font-size: 1.4em;
+            position: relative;
+        }
+
+        .message.sent {
+            background-color: #dcf8c6;
+            margin-left: auto;
+            border-radius: 10px 10px 0 10px;
+            padding: 10px;
+            word-wrap: break-word;
+            max-width: 80%;
+        }
+
+        .message.received {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 10px 10px 10px 0;
+            word-wrap: break-word;
+            max-width: 80%;
+        }
+
+        .message-time {
+            font-size: 0.9em;
+            color: #040404;
+            margin-top: 10px;
+            text-align: right;
+            position: absolute;
+            bottom: -20px;
+            right: 10px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        .message.received .avatar {
+            margin-left: 10px;
+            margin-right: 0;
+        }
+
+        .message.sent .avatar {
+            margin-left: auto;
+            margin-right: 0;
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 600px) {
+            .page {
+                font-size: 3vw;
+                padding: 10px;
+            }
+            .message {
+                font-size: 1.2em;
+            }
+        }
+
+    </style>
+    <style>
+        .rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+    
+        .heart, .word {
+            position: absolute;
+            font-size: 20px;
+            animation: rainEffect 4s infinite linear;
+        }
+    
+        .heart {
+            color: red;
+        }
+    
+        .word {
+            color: pink;
+            font-family: 'Arial', sans-serif;
+        }
+    
+        @keyframes rainEffect {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+    </style>
+   
+    <style>
+        .page.cover-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.cover-content {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 30px 50px;
+    border-radius: 20px;
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
+    border: 3px solid #ff6f91;
+    animation: zoomIn 1.5s ease-in-out;
+}
+
+h1 {
+    font-family: 'Pacifico', cursive;
+    font-size: 4rem;
+    margin-bottom: 15px;
+    color: #ff6f91;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+p {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.75rem;
+    color: #333;
+    margin-bottom: 0;
+}
+
+/* Keyframe Animations */
+@keyframes zoomIn {
+    0% {
+        transform: scale(0.7);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes balloonFloat {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* Decorative elements */
+.balloon {
+    position: absolute;
+    width: 60px;
+    height: 80px;
+    background: #ff6f91;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    animation: balloonFloat 4s infinite ease-in-out;
+    box-shadow: 2px 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.balloon::after {
+    content: '';
+    position: absolute;
+    top: 78%;
+    left: 48%;
+    width: 2px;
+    height: 50px;
+    background: #555;
+}
+
+/* Position balloons at different spots */
+.balloon:nth-child(1) {
+    top: 10%;
+    left: 20%;
+    animation-delay: 0s;
+}
+
+.balloon:nth-child(2) {
+    top: 30%;
+    left: 70%;
+    background: #f77a6f;
+    animation-delay: 1s;
+}
+
+.balloon:nth-child(3) {
+    top: 50%;
+    left: 40%;
+    background: #fdbb2d;
+    animation-delay: 2s;
+}
+
+
+.diary {
+    margin-top: 30px;
+    font-family: 'Quicksand', sans-serif;
+}
+
+.btn{
+  outline: none;
+  cursor: pointer;
+  border: none;
+  /* display: block; */
+  position: relative;
+  font-size: 16px;
+  font-weight: 300;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+ 
+  margin: 0 auto;
+  border-radius: 20px;
+}
+/* primary button */
+.btn-primary{
+  background-color: #0275d8;
+  box-shadow: 0 6px #052341;
+}
+.btn-primary:hover{
+  box-shadow: 0 4px #052341;
+  top: 2px;
+}
+.btn-primary:active{
+  box-shadow: 0 0 #052341;
+  top: 6px;
+}
+    </style>
+</head>
+<body style=" background-color: #0c0c0c; ">
+    <nav>
+        <a href="#" class="home-btn"  background-color: #0c0c0c; "> I Love You Meri Buggu💕   <span><button class="btn btn-primary">Click Me! </button></span></a>
+    </nav>
+    <div class="rain"></div>
+
+    <!-- Carousel -->
+    <div class="carousel-container" style="padding-bottom: 10px;">
+        <div class="carousel">
+            <video id="videoElement" src="./video-6.mp4" autoplay loop></video>
+           
+        </div>
+       
+    </div>
+
+    <!-- Flipbook -->
+    <div class="flipbook-container" style="background: url('./1.png'); padding-bottom: 50px !important; ">
+        <div id="flipbook" >
+            <!-- Cover Page -->
+          
+
+            <div class="page cover-page"  >
+                <div class="balloon"></div>
+                <div class="balloon"></div>
+                <div class="balloon"></div>
+                <div class="cover-content" >
+                    <h1>Happy Birthday meri Buggu💕</h1>
+                    <p>I Love You Meri Cute and Beautiful😘 My wife 💃</p>
+                   
+                </div>
+            </div>
+            
+
+            <!-- Pages with Messages -->
+            <!-- Repeat the following for each page as needed -->
+           
+            <div class="page">
+                <div class="profile-header">
+                    <div class="profile-info">
+                        <img src="./three.png" class="avatar" alt="User">
+                        <div class="name">Meri Buggu💕</div>
+                        <div class="status">Online</div>
+                    </div>
+                    <div class="status-dot"></div>
+                </div>
+
+                <div class="message received">
+                    <img src="./three.png" class="avatar" alt="User">
+                    <div>
+                        Mood Kharab Mat karo samjhe 😡😡
+                        <div class="message-time">11:47 AM</div>
+                    </div>
+                </div>
+                <div class="message sent">
+                    <div>
+                       I am So sorry Meri Buggu💕 😔🙏
+                        <div class="message-time">11:48 AM</div>
+                    </div>
+                    <img src="./foure.png" class="avatar" alt="User" />
+                </div>
+                <div class="message received">
+                    <img src="./three.png" class="avatar" alt="User">
+                    <div>
+                       Hmm 😡
+                        <div class="message-time">11:49 AM</div>
+                    </div>
+                </div>
+                <div class="message sent">
+                    <div>
+                     Meri Buggu💕  Ye Gusa Kabhi Kam mat karna 💕 
+                        <div class="message-time">11:50 AM</div>
+                    </div>
+                    <img src="./foure.png" class="avatar" alt="User" />
+                </div>
+                
+            </div>
+            <div class="page">
+                <div class="profile-header">
+                    <div class="profile-info">
+                        <img src="./three.png" class="avatar" alt="User">
+                        <div class="name">Meri Buggu💕</div>
+                        <div class="status">Online</div>
+                    </div>
+                    <div class="status-dot"></div>
+                </div>
+
+                <div class="message received">
+                    <img src="./three.png" class="avatar" alt="User">
+                    <div>
+                       Aaisa Kyu 
+                        <div class="message-time">11:51 AM</div>
+                    </div>
+                </div>
+                <div class="message sent">
+                    <div>
+                     Meri Buggu💕tumhara Gusa  mujhe bahut acha lgta hai 💕 
+                        <div class="message-time">11:52 AM</div>
+                    </div>
+                    <img src="./foure.png" class="avatar" alt="User" />
+                </div>
+                <div class="message received">
+                    <img src="./three.png" class="avatar" alt="User">
+                    <div>
+                       Hmm Kyu Nhi Kutta 😡
+                        <div class="message-time">11:53 AM</div>
+                    </div>
+                </div>
+                <div class="message sent">
+                    <div>
+                    I really Love You Meri Buggu💕
+                        <div class="message-time">11:54 AM</div>
+                    </div>
+                    <img src="./foure.png" class="avatar" alt="User" />
+                </div>
+            </div>
+            <div class="page">
+                <div class="profile-header">
+                    <div class="profile-info">
+                        <img src="./three.png" class="avatar" alt="User">
+                        <div class="name">Meri Buggu💕</div>
+                        <div class="status">Online</div>
+                    </div>
+                    <div class="status-dot"></div>
+                </div>
+
+                <div class="message received">
+                    <img src="./three.png" class="avatar" alt="User">
+                    <div>
+                        I love you  mere Pagalu 😘
+                        <div class="message-time">11:55 AM</div>
+                    </div>
+                </div>
+                <div class="message sent">
+                    <div>
+                        I Love You Meri Buggu💕Meri Cutie Pai 💃 Ummmmmmha 💋
+                        <div class="message-time">11:56 AM</div>
+                    </div>
+                    <img src="./foure.png" class="avatar" alt="User" />
+                </div>
+                <div class="message received">
+                    <img src="./three.png" class="avatar" alt="User">
+                    <div>
+                       Hmm 💕
+                        <div class="message-time">11:57 AM</div>
+                    </div>
+                </div>
+                <div class="message sent">
+                    <div>
+                        Acha Suno na Meri Buggu💕
+                        <div class="message-time">11:58 AM</div>
+                    </div>
+                    <img src="./foure.png" class="avatar" alt="User" />
+                </div>
+            </div>
+            <div class="page">
+                <div class="profile-header">
+                    <div class="profile-info">
+                        <img src="./three.png" class="avatar" alt="User">
+                        <div class="name">Meri Buggu💕</div>
+                        <div class="status">Online</div>
+                    </div>
+                    <div class="status-dot"></div>
+                </div>
+
+                <div class="message received">
+                    <img src="./three.png" class="avatar" alt="User">
+                    <div>
+                       kay hai 😡
+                        <div class="message-time">11:59 AM</div>
+                    </div>
+                </div>
+                <div class="message sent">
+                    <div>
+                        Happy Birthday 🎂🎉🎈🍔🍟🍰🍫🧁🎉🎃🧨🎇🎆🎈 Meri Buggu 💃💕 Meri sona baby uuuumha 💋
+                        <div class="message-time">00:00 AM</div>
+                    </div>
+                    <img src="./foure.png" class="avatar" alt="User" />
+                </div>
+                <div class="message received">
+                    <img src="./three.png" class="avatar" alt="User">
+                    <div>
+                       kutta  😡 
+                        <div class="message-time">00:01 AM</div>
+                    </div>
+                </div>
+                <div class="message sent">
+                    <div>
+                      kya Hua 😔  Meri Buggu 💃💕 
+                        <div class="message-time">00:02 AM</div>
+                    </div>
+                    <img src="./foure.png" class="avatar" alt="User" />
+                </div>
+            </div>
+            <div class="page">
+                <div class="profile-header">
+                    <div class="profile-info">
+                        <img src="./three.png" class="avatar" alt="User">
+                        <div class="name">Meri Buggu💕</div>
+                        <div class="status">Online</div>
+                    </div>
+                    <div class="status-dot"></div>
+                </div>
+
+                
+                <div class="message received">
+                    <img src="./three.png" class="avatar" alt="User">
+                    <div>
+                        Happy Birthday  boldiye ho gya 😡😡
+                        <div class="message-time">00:03 AM</div>
+                    </div>
+                </div>
+                <div class="message received">
+                    <img src="./three.png" class="avatar" alt="User">
+                    <div>
+                         Mera Gift  kaha hai🎁🎉😡
+                        <div class="message-time">00:04 AM</div>
+                    </div>
+                </div>
+                <div class="message sent">
+                    <div>
+                        Nahi Bilkul Bhi Nhi Meri Buggu💃💕
+                        <div class="message-time">00:05 AM</div>
+                    </div>
+                    <img src="./foure.png" class="avatar" alt="User" />
+                </div>
+                <div class="message sent">
+                    <div>
+                        Gift to Mere Pass hi Hai Meri Buggu 💃💕
+                        <div class="message-time">00:06 AM</div>
+                    </div>
+                    <img src="./foure.png" class="avatar" alt="User" />
+                </div>
+            </div>
+            <div class="page">
+                <div class="profile-header">
+                    <div class="profile-info">
+                        <img src="./three.png" class="avatar" alt="User">
+                        <div class="name">Meri Buggu💕</div>
+                        <div class="status">Online</div>
+                    </div>
+                    <div class="status-dot"></div>
+                </div>
+
+                <div class="message received">
+                    <img src="./three.png" class="avatar" alt="User">
+                    <div>
+                       Mujhe Kab Milega 😡 😡 mera Gift 🎁
+                        <div class="message-time">00:07 AM</div>
+                    </div>
+                </div>
+                <div class="message sent">
+                    <div>
+                        Meri Buggu💕 Jab Bulao  apne pass tabhi lekar hajir ho jata hun meri buggu💃💕💋  ka gift 🎁 
+                        <div class="message-time">00:08 AM</div>
+                    </div>
+                    <img src="./foure.png" class="avatar" alt="User" />
+                </div>
+                <div class="message received">
+                    <img src="./three.png" class="avatar" alt="User">
+                    <div>
+                       Hmm batati hun kaha aana hai 😡
+                        <div class="message-time">00:09 AM</div>
+                    </div>
+                </div>
+                <div class="message sent">
+                    <div >
+                        Uuuumha 💋 I love you meri Buggu 💃💋💋💕 
+                        <div class="message-time" >00:0=10 AM</div>
+                    </div>
+                    <img src="./foure.png" class="avatar" alt="User"  />
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+            <!-- Add more pages here -->
+        </div>
+    </div>
+
+    <!-- Include jQuery and turn.js -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="./turn.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#flipbook').turn({
+                width: 800,
+                height: 600,
+                autoCenter: true
+            });
+        });
+    </script>
+    
+  <script>
+    window.addEventListener('click', () => {
+        const video = document.getElementById('videoElement');
+        video.muted = false; // Unmute after user interaction
+        video.play();        // Ensure video is playing
+        
+    });
+</script>
+    <!-- Flipbook Initialization -->
+    <script>
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.textContent = '💕'+'💋';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 2 + 2 + 's'; // Random speed
+            document.querySelector('.rain').appendChild(heart);
+    
+            setTimeout(() => {
+                heart.remove();
+            }, 4000); // Remove after animation ends
+        }
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.textContent = '💕'+'💋';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 2 + 2 + 's'; // Random speed
+            document.querySelector('.rain').appendChild(heart);
+    
+            setTimeout(() => {
+                heart.remove();
+            }, 4000); // Remove after animation ends
+        }
+    
+        function createWord() {
+            const word = document.createElement('div');
+            word.classList.add('word');
+            word.textContent = '💗 Happy birthday  meri Buggu 💕';
+            word.style.left = Math.random() * 100 + 'vw';
+            word.style.animationDuration = Math.random() * 3 + 2 + 's'; // Random speed
+            document.querySelector('.rain').appendChild(word);
+    
+            setTimeout(() => {
+                word.remove();
+            }, 4000); // Remove after animation ends
+        }
+        function createImage() {
+        const image = document.createElement('img');
+        image.classList.add('image');
+        image.src = './image (3).png'; // Replace with your image URL
+        image.style.left = Math.random() * 100 + 'vw';
+        image.style.animationDuration = Math.random() * 2 + 2 + 's'; // Random speed
+        document.querySelector('.rain').appendChild(image);
+
+        setTimeout(() => {
+            image.remove();
+        }, 4000); // Remove after animation ends
+    }
+        setInterval(createImage, 1000);
+        setInterval(createHeart, 300); // Create a new heart every 300ms
+        setInterval(createWord, 2000); // Create a new word every 2000ms
+    </script>
+    <script>
+        // Array of image URLs
+        const imageUrls = [
+            './image (1).png',
+            './image (2).png',
+            './image (3).png',
+            // Add more image URLs as needed
+        ];
+    
+        function createImage() {
+            const image = document.createElement('img');
+            image.classList.add('image');
+            
+            // Select a random image from the array
+            const randomIndex = Math.floor(Math.random() * imageUrls.length);
+            image.src = imageUrls[randomIndex];
+            
+            image.style.left = Math.random() * 100 + 'vw';
+            image.style.animationDuration = Math.random() * 2 + 2 + 's'; // Random speed
+            document.querySelector('.rain').appendChild(image);
+    
+            setTimeout(() => {
+                image.remove();
+            }, 4000); // Remove after animation ends
+        }
+    
+        setInterval(createImage, 1000); // Create a new image every 300ms
+    </script>
+</body>
+</html>
